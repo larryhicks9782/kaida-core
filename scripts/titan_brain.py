@@ -3,6 +3,37 @@ from groq import Groq
 from titan_memory import MemoryManager # Importing your new separate file
 from titan_ui import TitanUI
 from rich.prompt import Prompt
+from titan_reasoning import ReasoningEngine
+
+class TitanBrain:
+    def __init__(self):
+        # ... (existing init code)
+        self.reasoner = ReasoningEngine(self)
+        self.use_tot = False  # Toggle this on/off
+
+    def think(self, prompt):
+        # --- Add this block ---
+        if prompt.lower().startswith("/tot "):
+            self.use_tot = not self.use_tot
+            return f"Tree of Thought mode is now {'ON' if self.use_tot else 'OFF'}."
+        
+        if self.use_tot:
+            return self.reasoner.get_tot_response(prompt)
+
+        def think(self, prompt):
+            print(f"DEBUG: use_tot is {self.use_tot}")
+
+        # Handle the /tot command
+        if prompt.strip().lower() == "/tot":
+            self.use_tot = not self.use_tot
+            # Make sure this line is complete:
+            return f"ToT is now {'ON' if self.use_tot else 'OFF'}"
+
+        # If ToT is active, use the reasoner
+        if self.use_tot:
+            print("DEBUG: Entering Reasoning Engine...")
+            self.reasoner.get_tot_response(prompt)
+        # Your standard code continues below...
 
 class TitanBrain:
     def __init__(self):
@@ -22,6 +53,26 @@ class TitanBrain:
     def think(self, prompt):
         self.history.append({"role": "user", "content": prompt})
         if len(self.history) > 10: self.history.pop(0)
+
+        self.modes["default"] = """
+You are Kaida. For complex questions, follow this process:
+1. Analyze the user's intent.
+2. Break the task into 2-3 logical steps.
+3. Think through each step quietly.
+4. Provide the final, accurate answer.
+Always "show your work" before giving the conclusion.
+"""
+
+        self.modes = {
+    "default": (
+        "You are Kaida. You are a long-term assistant for Larry. "
+        "DO NOT use introductory pleasantries like 'nice to meet you' or 'welcome'. "
+        "Recognize that you have a shared history with the user. "
+        "Be direct, helpful, and concise."
+    ),
+    # ... keep the rest of your modes
+}
+
 
         if user_input.startswith("/mode "):
             mode = user_input.split(" ")[1]
