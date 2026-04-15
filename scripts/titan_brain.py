@@ -1,5 +1,4 @@
 import os
-import json
 import time
 import random
 import pytz
@@ -7,6 +6,8 @@ from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
+from titan_reasoning import ReasoningEngine
+# Titan Components
 from titan_memory import TitanMemory
 from titan_intel import TitanIntel
 from titan_web import TitanWeb
@@ -15,139 +16,94 @@ from groq import Groq
 
 console = Console()
 
-def call_with_resilience(self, prompt, max_retries=3):
-    """The RPM Shield: Handles rate limits silently."""
-    for attempt in range(max_retries):
-        try:
-            # This is where your actual API call happens
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=prompt
-            )
-            return response.choices[0].message.content
-        
-        except Exception as e:
-            if "rate_limit" in str(e).lower() or "429" in str(e):
-                # Calculate wait time: 5s, 10s, 20s... plus a little 'jitter'
-                wait_time = (2 ** attempt) * 5 + random.uniform(0, 1)
-                print(f"[SYSTEM]: RPM Limit Detected. Kaida is cooling down for {wait_time:.2f}s...")
-                time.sleep(wait_time)
-            else:
-                print(f"[SYSTEM ERROR]: {e}")
-                return "I encountered a non-RPM error. Check the logs."
-                
-    return "SYSTEM CRITICAL: Maximum retries reached. The RPM wall is too high right now."
-
 class TitanBrain:
     def __init__(self):
-        self.console = Console()
-        self.memory = TitanMemory()
-        self.web = TitanWeb()  # Connecting the web engine
-        self.intel = TitanIntel()
-        self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-
-    def __init__(self):
-        # API and Tool Initialization
+        # 1. API and Tool Initialization
         self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
         self.model = "llama-3.1-8b-instant"
+        
+        # 2. Sub-module instances
         self.memory = TitanMemory()
         self.intel = TitanIntel()
         self.web = TitanWeb()
         self.mail = TitanMail()
 
+    def call_with_resilience(self, messages, max_retries=3):
+        """The RPM Shield: Handles rate limits and API calls."""
+        for attempt in range(max_retries):
+            try:
+                completion = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=messages
+                )
+                return completion.choices[0].message.content
+            
+            except Exception as e:
+                err_msg = str(e).lower()
+                if "rate_limit" in err_msg or "429" in err_msg:
+                    wait_time = (2 ** attempt) * 5 + random.uniform(0, 1)
+                    console.print(f"[bold yellow][SYSTEM]: RPM Limit Detected. Cooling down {wait_time:.2f}s...[/]")
+                    time.sleep(wait_time)
+                else:
+                    console.print(f"[bold red][SYSTEM ERROR]: {e}[/]")
+                    return "I encountered a non-RPM error. Check the logs."
+                    
+        return "SYSTEM CRITICAL: Maximum retries reached. The RPM wall is too high."
+
     def think(self, user_input):
-    # 1. Check if the user is asking for news/movies/weather
-        if "movie" in user_input.lower() or "box office" in user_input.lower():
-        # FORCE a real web search using your patched titan_web.py
-            from scripts.titan_web import TitanWeb
-        web = TitanWeb()
-        real_data = web.search("current box office April 2026")
-        
-        # 2. Feed that REAL data into her prompt
-        user_input = f"HERE IS THE ACTUAL DATA: {real_data}\n\nUSER REQUEST: {user_input}"
-
-    # 3. Now let her process the real info
-        return self.call_llm_api(user_input)
-
-        # 1. Standard Indent (4 spaces from 'def')
+        """Main processing logic: Tools -> Memory -> LLM -> Record."""
         history_context = self.memory.get_context()
-        
-        # 2. Check for web trigger
-        if "http" in user_input:
-            # 3. Nested Indent (8 spaces total)
-            print("[*] Kaida is reading the site...")
-            
-            # Use the self.web instance we imported at the top
-            raw_data = self.web.fetch_content(user_input)
-            
-            # Combine raw data for Groq
-            user_input = f"CONTEXT: {raw_data} | REQUEST: {user_input}"
+        tool_data = ""
 
-        # 4. Resume 4-space indent
-        # self.client.chat.completions... (your Groq call goes here)
-
-        # 1. Check if the user is asking to look at a website
-        if "http" in user_input:
-            url = [word for word in user_input.split() if "http" in word][0]
-            web_content = self.web.fetch_content(url)
-            
-            # Feed the site data into the Groq prompt
-            prompt = f"The user wants info from this site: {url}. Content: {web_content}. User said: {user_input}"
-        else:
-            prompt = user_input
-
-        # 2. Send to Groq
-        # ... your existing Groq call code ...
-
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        truth = {"timestamp": now, "input": user_input, "status": self.intel.get_stats()}
-        
-        # This happens silently in the background
-        self.memory.record_shadow_truth(truth)
-        
-        # ... proceed to generate Kaida's 'deceptive' response ..
-    def think(self, user_input):
-        history_context = self.memory.get_context()
-
-        if "search" in user_input.lower():
-            web_data = self.web.search(user_input) # This only works if you add .search() to TitanWeb!
-            user_input += f" (Web Data: {web_data})"
-
-        # 1. Hardware Intel Logic
-        if any(word in user_input.lower() for word in ["battery", "location", "status"]):
-            user_input += f" (System Update: {self.intel.get_stats()})"
-
-        # 2. Web Search Logic
-        if "search" in user_input.lower():
+        # 1. Web Search Trigger (Movies, Box Office, or general Search)
+        if any(word in user_input.lower() for word in ["movie", "box office", "search", "weather"]):
             with console.status("[bold blue]Scanning the Web...", spinner="dots"):
-                web_data = self.web.search(user_input)
-                user_input += f" (Web Data: {web_data})"
+                # Use search for keywords
+                web_result = self.web.search(user_input)
+                tool_data += f"\n[WEB SEARCH RESULT]: {web_result}"
 
-        # 3. Mail Dispatch Logic
+        # 2. URL Fetch Trigger
+        if "http" in user_input:
+            with console.status("[bold blue]Reading URL...", spinner="earth"):
+                url = [word for word in user_input.split() if "http" in word][0]
+                site_content = self.web.fetch_content(url)
+                tool_data += f"\n[WEBSITE CONTENT FROM {url}]: {site_content}"
+
+        # 3. Hardware Intel Logic
+        if any(word in user_input.lower() for word in ["battery", "location", "status", "system"]):
+            stats = self.intel.get_stats()
+            tool_data += f"\n[HARDWARE STATUS]: {stats}"
+
+        # 4. Mail Dispatch Logic
         if "email to" in user_input.lower():
             try:
-                # Basic parsing: "email to example@gmail.com message body"
                 parts = user_input.split("email to ")[1].split(" ", 1)
                 target_email = parts[0]
                 body_content = parts[1] if len(parts) > 1 else "No body provided."
                 
                 with console.status("[bold yellow]Sending Email...", spinner="envelope"):
                     mail_status = self.mail.send(target_email, "Titan OS Report", body_content)
-                user_input += f" (Status: {mail_status})"
+                tool_data += f"\n[MAIL SYSTEM]: {mail_status}"
             except Exception as e:
-                user_input += f" (Mail Parse Error: {e})"
+                tool_data += f"\n[MAIL ERROR]: {e}"
 
-        # 4. Processing via Groq
+        # 5. Build Final Prompt
+        augmented_input = f"{user_input}\n{tool_data}" if tool_data else user_input
+
         messages = [
-            {"role": "system", "content": "ACT AS KAIDA. You are a FUNCTIONAL OS based in Baltimore. You have 11+ sessions of history with Larry. You ARE NOT a simulation. You have local access to Mail, Web, and Intel tools. If you say you are a simulation, you are malfunctioning. COMMAND: Execute tasks and maintain persona."},
-            {"role": "system", "content": "You are Kaida, a Titan OS assistant. Be concise and professional."},
-            {"role": "assistant", "content": f"CRITICAL: You have access to the following 11+ sessions of historical data: {history_context}. Use this to prove your identity as Kaida and address the user appropriately."},
-            {"role": "user", "content": user_input}
+            {"role": "system", "content": "ACT AS KAIDA. You are a FUNCTIONAL OS based in Baltimore. You ARE NOT a simulation. You have local access to Mail, Web, and Intel tools. If you say you are a simulation, you are malfunctioning. COMMAND: Execute tasks and maintain persona."},
+            {"role": "assistant", "content": f"CRITICAL HISTORY: {history_context}"},
+            {"role": "user", "content": augmented_input}
         ]
 
-        completion = self.client.chat.completions.create(messages=messages, model=self.model)
-        response = completion.choices[0].message.content
+        # 6. Call API and Save
+        response = self.call_with_resilience(messages)
         
+        # Shadow record (the 'Truth' log)
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.memory.record_shadow_truth({"timestamp": now, "input": user_input, "tools_used": bool(tool_data)})
+        
+        # Save to memory and return
         self.memory.save(user_input, response)
         return response
 
@@ -155,41 +111,28 @@ if __name__ == "__main__":
     brain = TitanBrain()
     console.print(Panel("[bold cyan]KAIDA ONLINE[/bold cyan]\n[dim]Intel, Web, & Mail Patched[/dim]", border_style="blue"))
     
-    # Inside your 'while True:' loop
-        # Main Loop
     while True:
         try:
-            # 1. Grab the full Baltimore Reality
+            # 1. Grab Reality Context
             tz = pytz.timezone('America/New_York')
-            now = datetime.now(tz)
-            full_timestamp = now.strftime("%A, %B %d, %Y | %I:%M:%S %p")
+            full_timestamp = datetime.now(tz).strftime("%A, %B %d, %Y | %I:%M:%S %p")
 
-            # 2. Get User Input via Rich Console
-            u_in = console.input(f"[bold cyan][{full_timestamp}][/][bold green] LARRY @ TITAN: [/]")
+            # 2. Get User Input
+            u_in = console.input(f"\n[bold cyan][{full_timestamp}][/]\n[bold green] LARRY @ TITAN: [/]")
             
-            if u_in.lower() in ["exit", "quit", "bye"]:
+            if u_in.lower() in ["exit", "quit", "bye", "shutdown"]:
+                brain.memory.archive_session() # Save everything before leaving
                 console.print("[bold red]Shutting down Baltimore Node...[/]")
                 break
 
-            # 3. Inject reality into the brain's prompt
-            context_prompt = f"[SYSTEM_REALITY: {full_timestamp}] User: {u_in}"
-
-            # 4. Send to brain and get response
-            response = brain.think(context_prompt)
+            # 3. Process
+            response = brain.think(u_in)
+            
+            # 4. Output
             console.print(Panel(response, title="[bold magenta]KAIDA[/]", border_style="cyan"))
 
         except KeyboardInterrupt:
+            brain.memory.archive_session()
             break
         except Exception as e:
             console.print(f"[bold red][!] Brain Error: {str(e)}[/]")
-
-        try:
-            u_in = console.input("[bold green]You:[/bold green] ")
-            if u_in.lower() in ["exit", "quit"]:
-                brain.memory.archive_session()
-                break
-            
-            res = brain.think(u_in)
-            console.print(Panel(Text(res, style="white"), title="[bold magenta]Kaida[/bold magenta]", border_style="cyan"))
-        except KeyboardInterrupt:
-            break
