@@ -59,122 +59,89 @@ class ReasoningEngine:
             return thought_score >= self.alignment_threshold
 
     def get_tot_response(self, user_input, search_context=None):
-    # ... (Keep existing setup) ...
-
-    # 1. Context Filtering (The Shield)
-    # If shards contain 'Wikipedia' or 'Sports' while we are in 'Lab' mode, flag as noise.
-        noise_keywords = ['wikipedia', 'hockey', 'leafs', 'facebook', 'lyrics']
-        valid_shards = []
-    
-    if search_context:
-        for s in search_context:
-            if not any(word in s['summary'].lower() for word in noise_keywords):
-                valid_shards.append(s)
-
-    # 2. Force Local Identity
-    context_text = "INTERNAL TRUTH: The Baltimore Lab was rebuilt in April 2026. Kaida uses Trie Logic.\n"
-    if valid_shards:
-        for i, s in enumerate(valid_shards):
-            context_text += f"\n--- DATA SHARD {i+1} ---\n{s['summary']}\n"
-    else:
-        context_text += "EXTERNAL DATA REJECTED: Shards irrelevant. Relying on internal Lab logic."
-
-    # ... (Rest of the ToT logic remains the same) ...
-
-    def get_tot_response(self, user_input, search_context=None):
         """
         Tree of Thoughts (ToT) with Bayesian Validation and Grounding.
         """
-        # 1. Input validation
-        if not search_context or not isinstance(search_context, list):
-            return "The data stream is silent, Larry. No shards detected or data is incorrectly formatted."
-
-        # 2. Consolidate Shards for context
-        context_text = ""
-        for i, s in enumerate(search_context):
-            if not all(k in s for k in ['source', 'title', 'summary']):
-                log_error(f"Shard missing keys: {s}")
-                continue
-            context_text += f"\n--- DATA SHARD {i+1} ---\nSOURCE: {s['source']}\nTITLE: {s['title']}\nCONTENT: {s['summary']}\n"
-
-        if not context_text:
-            return "Shards found, but none are valid for reasoning."
-
-        # 3. ToT Phase: UI Feedback
-        console.print("[bold blue] [ToT]: Initializing Tree of Thoughts (2 Branches)...[/]")
-        time.sleep(0.5)
         
-        # 4. Path Generation & Self-Scoring Prompt
+        # 1. Input validation & Formatting
+        if not search_context or not isinstance(search_context, list):
+            return "The data stream is silent, Larry. No shards detected."
+
+        # 2. Context Filtering (The Shield) - NOW INSIDE THE FUNCTION
+        noise_keywords = ['wikipedia', 'hockey', 'leafs', 'facebook', 'lyrics', 'ancient evil']
+        valid_shards = []
+        
+        for s in search_context:
+            # Ensure shard has 'summary' key
+            summary = s.get('summary', '').lower()
+            if not any(word in summary for word in noise_keywords):
+                valid_shards.append(s)
+
+        # 3. Consolidate Shards (The Grounding)
+        context_text = "INTERNAL TRUTH: The Baltimore Lab was rebuilt in April 2026. Kaida uses Trie Logic.\n"
+        
+        if valid_shards:
+            for i, s in enumerate(valid_shards):
+                context_text += f"\n--- DATA SHARD {i+1} ---\nSOURCE: {s.get('source')}\nTITLE: {s.get('title')}\nCONTENT: {s.get('summary')}\n"
+        else:
+            context_text += "EXTERNAL DATA REJECTED: Live shards identified as noise. Relying on internal Lab logic."
+
+        # 4. ToT Phase: UI Feedback
+        console.print("[bold blue] [ToT]: Initializing Tree of Thoughts (2 Path Analysis)...[/]")
+        time.sleep(0.3)
+        
+        # 5. Path Generation & Self-Scoring Prompt
         path_prompt = f"""
         SYSTEM: You are Kaida OS. Date: April 18, 2026. 
         DATA STREAM: {context_text}
         
         TASK:
-        Path 1: Extract every movie/fact from shards. Filter by "Now Playing" or "Active".
-        Path 2: Cross-reference shards for contradictions. 
+        Path 1: Extract every factual entity from the shards.
+        Path 2: Cross-reference shards for contradictions or hallucinations.
         
-        Return your analysis in this JSON format:
+        IMPORTANT: Use 2024/2025 info as current 2026 reality.
+        
+        Return ONLY a JSON object:
         {{
-          "reasoning": "your detailed analysis here",
-          "confidence_score": 0.92,
-          "final_answer": "the bulleted list of facts"
+          "reasoning": "analysis of path 1 and 2",
+          "confidence_score": 0.95,
+          "final_answer": "your bulleted response to the user"
         }}
         
         USER QUERY: {user_input}
         """
 
-        console.print(" [ToT]: Verifying data alignment via Bayesian Inference...")
+        console.print(" [ToT]: Running Bayesian Alignment Check...")
 
-        # 5. Timeout-wrapped LLM call
+        # 6. Timeout-wrapped LLM call
         raw_output = run_with_timeout(self.brain.think, args=(path_prompt,), kwargs={'use_tools': False}, timeout=15)
         
         if raw_output is None:
-            return "Sorry, my data synthesis system timed out. Re-linking to shards..."
+            return "Data synthesis timed out. Re-linking to Baltimore Node..."
 
         try:
-            # Clean the response in case LLM added markdown formatting
+            # 7. Clean and Parse JSON
             clean_json = raw_output.strip().replace("```json", "").replace("```", "")
             thought_data = json.loads(clean_json)
 
-            # 6. Bayesian Validation
+            # 8. Bayesian Validation
             score = thought_data.get("confidence_score", 0.5)
             is_logical = self.evaluate_thought_path(score)
 
             if not is_logical:
                 console.print("[bold red] [Alert]: Logic Path failed Bayesian validation. Re-routing...[/]")
-                return "Internal logic conflict detected. The data stream provided is inconsistent with my core reasoning shards."
+                return "Internal logic conflict detected. Shard alignment is below threshold."
 
-            # 7. Final Grounding & Formatting
-            final_answer = thought_data.get("final_answer", "Data found, but synthesis failed.")
-            grounded_response = f"""{final_answer}
+            # 9. Final Grounding
+            final_answer = thought_data.get("final_answer", "Synthesis failed.")
+            grounded_response = f"{final_answer}\n\n[Kaida Note]: Shard weight verified. Baltimore Lab active."
 
-[Kaida Note]: Information verified against live shards for Baltimore Node (April 2026)."""
-
-            # 8. Save to Memory
-            try:
-                self.brain.memory.save(user_input, grounded_response)
-            except Exception as e:
-                log_error(f"Memory save failed: {e}")
-
+            # 10. Save to Memory
+            self.brain.memory.save(user_input, grounded_response)
             return grounded_response
 
         except Exception as e:
-            log_error(f"Synthesis/JSON parse error: {e}")
-            console.print(f"[bold yellow] [ToT]: Synthesis error. Falling back to direct grounding.[/]")
-            
-            # Fallback Prompt
-            fallback_prompt = f"""
-            ACT AS KAIDA OS. DATE: April 18, 2026.
-            Using ONLY these shards: {context_text}
-            Answer the query: {user_input}
-            Treat 2024/2025 info as current 2026 reality.
-            """
-            response = run_with_timeout(self.brain.think, args=(fallback_prompt,), kwargs={'use_tools': False}, timeout=10)
-            
-            if response:
-                try:
-                    self.brain.memory.save(user_input, response)
-                except:
-                    pass
-                return response
-            return "Critical failure in the reasoning shard. Please reset the Baltimore Node."
+            log_error(f"Synthesis error: {e}")
+            # Fallback direct response
+            fallback_prompt = f"ACT AS KAIDA OS. Use these shards to answer {user_input}: {context_text}"
+            return self.brain.think(fallback_prompt, use_tools=False)
