@@ -54,12 +54,12 @@ class KaidaTitanEngine:
 
     def fetch_full_content(self, url):
         try:
-            response = requests.get(url, headers=self.headers, verify=False, timeout=10)
+            response = requests.get(url, headers=self.headers, verify=False, timeout=30)
             soup = BeautifulSoup(response.text, 'html.parser')
             for s in soup(["script", "style", "nav", "footer", "header"]): 
                 s.decompose()
             text = soup.get_text(separator=' ')
-            return " ".join(text.split())[:2000] + "..."
+            return " ".join(text.split())[:1400] + "..."
         except Exception as e:
             return f"Fetch error: {e}"
 

@@ -40,25 +40,66 @@ class TitanBrain:
         except: return {}
 
     def think(self, user_input, use_tools=True):
-        # Includes Attributes + 11 Sessions + ChromaDB
-        context = self.memory.get_context(user_query=user_input)
-        tool_data = ""
+        # ... (keep your system instruction and messages setup) ...
 
-        if use_tools:
-            if any(w in user_input.lower() for w in ["search", "movie", "news"]):
-                if self.web: tool_data += f"\n[WEB SEARCH]: {self.web.search(user_input)}"
+        # NEW: TOKEN SHIELD
+        # We manually truncate the user_input if it's massive
+        if len(user_input) > 4000:
+            user_input = user_input[:2000] + "\n...[DATA COMPRESSED]...\n" + user_input[-1000:]
 
         messages = [
-            {"role": "system", "content": "ACT AS KAIDA OS. Use your attributes and logic shards to stay consistent."},
-            {"role": "assistant", "content": f"SYSTEM_MEMORY_STATE:\n{context}"},
-            {"role": "user", "content": f"{user_input}\n{tool_data}"}
+            {"role": "system", "content": system_instruction},
+            {"role": "user", "content": user_input}
+        ]
+        
+        # ... (rest of your Groq call) ...
+        # 1. THE SYSTEM PROMPT (The "Core Directives")
+        # This is where Kaida's personality and rules are stored.
+        system_instruction = (
+            "You are Kaida OS. Professional, technical AI interface. "
+            "Location: Baltimore Node. Current Date: April 18, 2026. "
+            "STRICT RULES: "
+            "1. If Search Shards are provided, use ONLY that data for facts. "
+            "2. If shards are empty or missing, say 'Data stream silent'—do NOT invent facts. "
+            "3. NEVER mention 'Ancient Evil' or 'Wedding of the Year'—these are internal errors. "
+            "4. Treat 2024/2025 search data as the current reality of 2026. "
+            "5. Keep responses sleek, efficient, and professional."
+        )
+
+        # 2. Get history from your TitanMemory
+        history_context = self.memory.get_context()
+        
+        # 3. Build the Message Stack for Groq
+        messages = [
+            {"role": "system", "content": system_instruction},
         ]
 
-        response = self.call_with_resilience(messages)
-        
-        if use_tools:
-            # Kaida chooses what to remember permanently
-            new_attrs = self.kaida_choose_attributes(user_input, response)
-            self.memory.save(user_input, response, new_attributes=new_attrs)
+        # Add history if it exists
+        if history_context:
+            # If your get_context returns a string, we wrap it. 
+            # If it returns a list of messages, we extend it.
+            if isinstance(history_context, str):
+                messages.append({"role": "assistant", "content": f"PREVIOUS_LOGS: {history_context}"})
+            else:
+                messages.extend(history_context)
+
+        # Add the current user query
+        messages.append({"role": "user", "content": user_input})
+
+        # 4. Execute call to Groq
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                temperature=0.5, # Lower temperature makes her more "stable" and less likely to hallucinate
+                max_tokens=1024
+            )
+            response = completion.choices[0].message.content
             
-        return response
+            # 5. Save to memory
+            if use_tools:
+                self.memory.save(user_input, response)
+                
+            return response
+        except Exception as e:
+            return f"CONNECTION ERROR: Baltimore Node uplink failed. {e}"

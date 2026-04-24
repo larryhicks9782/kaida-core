@@ -106,6 +106,8 @@ class ReasoningEngine:
           "reasoning": "analysis of path 1 and 2",
           "confidence_score": 0.95,
           "final_answer": "your bulleted response to the user"
+          # Add this line to the prompt:
+          "Keep the 'reasoning' field under 2 sentences. Focus your power on the 'final_answer'."
         }}
         
         USER QUERY: {user_input}
@@ -114,7 +116,8 @@ class ReasoningEngine:
         console.print(" [ToT]: Running Bayesian Alignment Check...")
 
         # 6. Timeout-wrapped LLM call
-        raw_output = run_with_timeout(self.brain.think, args=(path_prompt,), kwargs={'use_tools': False}, timeout=15)
+        # Change from 15 to 30
+        raw_output = run_with_timeout(self.brain.think, args=(path_prompt,), kwargs={'use_tools': False}, timeout=30)
         
         if raw_output is None:
             return "Data synthesis timed out. Re-linking to Baltimore Node..."
