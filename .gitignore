@@ -1,3 +1,18 @@
 *.json
 __pycache__/
 .env
+skills/
+scripts/
+apt killer
+android_tools
+.gitmore
+make file
+read me md
+_int_.py
+archive_intel.py
+fire store rule
+kaida_engine__errors.txt
+cloud_sync.sh
+titan reports txt
+uplink.sh
+
