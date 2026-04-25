@@ -1,81 +1,74 @@
-import json
 import os
+import json
 import chromadb
 from datetime import datetime
 
 class TitanMemory:
     def __init__(self):
-        self.file_path = "titan_memory.json"
-        self.vault_path = "black_box.json"
+        self.base_dir = os.getcwd()
+        self.db_path = os.path.join(self.base_dir, "memory")
+        self.history_file = os.path.join(self.base_dir, "titan_memory.json")
         
-        # Initialize ChromaDB (Forever Memory Shards)
-        try:
-            self.chroma_client = chromadb.PersistentClient(path="/root/titan_system/memory")
-            self.collection = self.chroma_client.get_or_create_collection(name="titan_logic_shards")
-        except Exception as e:
-            print(f"[Memory Alert] ChromaDB offline: {e}")
-            self.collection = None
+        if not os.path.exists(self.db_path): 
+            os.makedirs(self.db_path)
             
-        self.memory_data = self.load_memory()
+        self.client = chromadb.PersistentClient(path=self.db_path)
+        self.collection = self.client.get_or_create_collection(name="titan_shards")
+        
+        # Standardizing attribute name to 'data' for NSEE compatibility
+        self.data = self._load_data()
 
-    def load_memory(self):
-        """Loads memory and migrates old formats to Session/Attribute format."""
-        default_map = {"sessions": [], "key_attributes": {}}
-        if os.path.exists(self.file_path) and os.path.getsize(self.file_path) > 0:
+    def _load_data(self):
+        if os.path.exists(self.history_file):
             try:
-                with open(self.file_path, 'r') as f:
-                    data = json.load(f)
-                    # Migration: If old memory was just a list, convert it
-                    if isinstance(data, list):
-                        return {"sessions": data[-11:], "key_attributes": {}}
-                    return data
+                with open(self.history_file, 'r') as f: 
+                    return json.load(f)
             except:
-                return default_map
-        return default_map
+                return {"sessions": [], "key_attributes": {}}
+        return {"sessions": [], "key_attributes": {}}
 
-    def get_context(self, user_query=""):
-        """Returns attributes, 11-session history, and relevant ChromaDB shards."""
-        # 1. Attributes Kaida chose to remember
-        attrs = self.memory_data.get("key_attributes", {})
-        attr_str = f"--- KAIDA'S KEY ATTRIBUTES ---\n{json.dumps(attrs, indent=2)}\n"
+    def start_ingestion(self):
+        """Ingest the 60 Logic Core Shards into Vector Space."""
+        shard_dir = os.path.join(self.base_dir, "shards")
+        if not os.path.exists(shard_dir): return "NO_SHARDS"
+        
+        if self.collection.count() == 0:
+            for i in range(1, 61):
+                path = os.path.join(shard_dir, f"shard_{i}.txt")
+                if os.path.exists(path):
+                    with open(path, 'r') as f:
+                        self.collection.add(ids=[f"S_{i}"], documents=[f.read().strip()])
+            return "CORE_INGESTED"
+        return "CORE_READY"
 
-        # 2. Last 11 Sessions
-        sessions = self.memory_data.get("sessions", [])[-11:]
-        history_str = "--- RECENT SESSIONS (ROLLING 11) ---\n"
-        for s in sessions:
-            history_str += f"User: {s.get('user')}\nKaida: {s.get('titan')}\n"
-
-        # 3. ChromaDB Shards (Logic Core)
-        shard_str = "\n--- RELEVANT LOGIC SHARDS ---\n"
-        if user_query and self.collection:
+    def get_context(self, query=""):
+        """Aggregates history and vector shards for the Brain."""
+        history = self.data.get("sessions", [])[-10:]
+        h_str = "\n".join([f"L: {s['u']} | K: {s['k']}" for s in history])
+        
+        shards = ""
+        if query and self.collection.count() > 0:
             try:
-                results = self.collection.query(query_texts=[user_query], n_results=2)
-                for doc in results['documents'][0]:
-                    shard_str += f"- {doc}\n"
-            except: pass
+                results = self.collection.query(query_texts=[query], n_results=2)
+                shards = "\n".join(results['documents'][0])
+            except:
+                pass
+            
+        return f"[HISTORY]\n{h_str}\n\n[LOGIC_CORE]\n{shards}"
 
-        return f"{attr_str}\n{history_str}\n{shard_str}"
-
-    def save(self, user_in, titan_out, new_attributes=None):
-        """Saves session and updates key attributes chosen by Kaida."""
-        # Update Sessions
-        if "sessions" not in self.memory_data: self.memory_data["sessions"] = []
-        self.memory_data["sessions"].append({
-            "timestamp": datetime.now().isoformat(),
-            "user": user_in,
-            "titan": titan_out
+    def save(self, u, k):
+        """Saves exchange and updates the internal data object."""
+        if "sessions" not in self.data:
+            self.data["sessions"] = []
+            
+        self.data["sessions"].append({
+            "u": u, 
+            "k": k, 
+            "t": datetime.now().isoformat()
         })
-        # Strict 11 Session Limit
-        self.memory_data["sessions"] = self.memory_data["sessions"][-11:]
-
-        # Update Attributes (The JSON file Kaida reads from)
-        if new_attributes and isinstance(new_attributes, dict):
-            if "key_attributes" not in self.memory_data: self.memory_data["key_attributes"] = {}
-            self.memory_data["key_attributes"].update(new_attributes)
-
-        with open(self.file_path, 'w') as f:
-            json.dump(self.memory_data, f, indent=4)
-
-    def record_shadow_truth(self, truth_data):
-        with open(self.vault_path, 'a') as f:
-            json.dump(truth_data, f); f.write('\n')
+        
+        # Maintain rolling 20 session limit for entropy stability
+        self.data["sessions"] = self.data["sessions"][-20:]
+        
+        with open(self.history_file, 'w') as f: 
+            json.dump(self.data, f, indent=4)

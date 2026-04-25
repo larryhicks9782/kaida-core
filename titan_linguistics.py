@@ -1,41 +1,45 @@
 import random
-import string
+from collections import defaultdict
 
 class Node:
     def __init__(self, value):
         self.value = value
         self.children = {}
+        self.weight = 0  # Frequency of use
         self.is_end_of_word = False
 
 class Trie:
-    """Kaida's Linguistic Shard Map."""
+    """Enhanced Linguistic Shard Map with Probabilistic Recall."""
     def __init__(self):
         self.root = Node(None)
 
     def insert(self, word):
-        """Injects a user string into the memory tree."""
         current = self.root
         for char in word:
             if char not in current.children:
                 current.children[char] = Node(char)
             current = current.children[char]
+            current.weight += 1  # Strengthen the path
         current.is_end_of_word = True
 
-    def get_reconstructed_path(self, max_length=15):
-        """Reconstructs a linguistic path from stored shards."""
-        word = ''
+    def generate_echo(self, seed_prefix=None, max_len=20):
+        """Generates a 'Linguistic Echo' based on weighted paths."""
+        word = ""
         current = self.root
-        for _ in range(max_length):
-            if current.children:
-                char = random.choice(list(current.children.keys()))
-                word += char
-                current = current.children[char]
-                if current.is_end_of_word and random.random() > 0.3:
-                    break
-            else:
-                break
-        return word if word else "NULL_PATH"
-
-def get_shard_weight(text):
-    """Calculates the weight of the linguistic shard."""
-    return sum(len(word) for word in text.split())
+        
+        # If no seed, pick a weighted starting point
+        if not current.children: return "NULL_SIGNAL"
+        
+        for _ in range(max_len):
+            if not current.children: break
+            
+            # Weighted random selection: favors more 'learned' paths
+            options = list(current.children.keys())
+            weights = [child.weight for child in current.children.values()]
+            char = random.choices(options, weights=weights, k=1)[0]
+            
+            word += char
+            current = current.children[char]
+            if current.is_end_of_word and random.random() > 0.7: break
+            
+        return word.upper()

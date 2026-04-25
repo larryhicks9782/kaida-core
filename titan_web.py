@@ -1,119 +1,95 @@
 import requests
 import urllib3
 import time
+import concurrent.futures
 from bs4 import BeautifulSoup
+from duckduckgo_search import DDGS
 
-# The library has been renamed to 'ddgs', but often remains 'duckduckgo_search' in pip.
-# This handles both cases to ensure Kaida stays online.
-try:
-   from ddgs import DDGS
-except ImportError:
-   DDGS = None
-
-# Suppress SSL warnings for proot/unstable environments
+# Suppress SSL warnings for unstable environments
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-class TitanWeb:
-    def __init__(self):
-        self.status = "Active"
-
-    def search(self, query):
-        if not DDGS:
-            return [{"title": "Error", "body": "DDGS Library not found.", "href": ""}]
-        try:
-            with DDGS() as ddgs:
-                # Newest DDGS versions prefer this syntax
-                results = [r for r in ddgs.text(query, max_results=5)]
-                return results if results else [{"title": "No results", "body": "Search empty.", "href": ""}]
-        except Exception as e:
-            return [{"title": "Search Error", "body": str(e), "href": ""}]
-
 class KaidaTitanEngine:
-    WHITELISTS = {
-        "tech": ["theverge.com", "arstechnica.com", "wired.com", "techcrunch.com", "github.com"],
-        "ent": ["variety.com", "deadline.com", "hollywoodreporter.com", "ign.com", "imdb.com", "rottentomatoes.com"],
-        "news": ["reuters.com", "apnews.com", "bbc.com", "npr.org"],
-        "finance": ["bloomberg.com", "wsj.com", "ft.com", "cnbc.com"]
-    }
-
     def __init__(self):
-        self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        self.headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+        }
+        self.status = "Baltimore Node: Web Uplink Active"
 
-    def _clean_query(self, query):
-        """Clean 2026/Baltimore references and fix typos for the search engine."""
-        # Remove fictional date/locations
-        clean = query.lower().replace("2026", "2024").replace("april", "").replace("baltimore", "").strip()
+    def _clean_text(self, html):
+        """Advanced noise reduction: Strips headers, footers, and scripts."""
+        soup = BeautifulSoup(html, 'html.parser')
+        for element in soup(["script", "style", "nav", "footer", "header", "aside"]):
+            element.decompose()
         
-        # Prevent double-appended search terms and fix "seach" typos
-        clean = clean.replace("seach", "search")
-        
-        if any(x in clean for x in ["movie", "theater", "playing"]) and "now playing" not in clean:
-            clean = "movies now playing in theaters"
-        
-        return clean
+        # Extract text and remove massive whitespace
+        text = soup.get_text(separator=' ')
+        lines = (line.strip() for line in text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        return " ".join(chunk for chunk in chunks if chunk)
 
-    def fetch_full_content(self, url):
+    def _fetch_deep_content(self, url):
+        """Scouts the actual content of a specific shard."""
         try:
-            response = requests.get(url, headers=self.headers, verify=False, timeout=30)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            for s in soup(["script", "style", "nav", "footer", "header"]): 
-                s.decompose()
-            text = soup.get_text(separator=' ')
-            return " ".join(text.split())[:1400] + "..."
+            response = requests.get(url, headers=self.headers, verify=False, timeout=8)
+            if response.status_code == 200:
+                content = self._clean_text(response.text)
+                return content[:2500]  # Return first 2500 chars for the LLM context
         except Exception as e:
-            return f"Fetch error: {e}"
+            return f"Data Acquisition Failed: {str(e)}"
+        return None
 
-    def ingest(self, topic, category=None, num_shards=3, deep_scan=False):
-        if not DDGS:
-            print("❌ [Critical] DDGS library missing.")
-            return []
-
-        search_term = self._clean_query(topic)
-        is_filtered = category in self.WHITELISTS
+    def ingest(self, query, max_shards=4):
+        """The core ingestion process using Parallel Threading."""
+        print(f"📡 [Kaida-Titan] Initializing Wide-Band Scan: {query}")
         
-        # 1. Attempt Whitelisted Search
-        if is_filtered:
-            site_filter = " OR ".join([f"site:{site}" for site in self.WHITELISTS[category]])
-            full_query = f"{search_term} ({site_filter})"
-            print(f"📡 [Kaida-Titan] Targeted Scan: {search_term}")
-        else:
-            full_query = search_term
-            print(f"📡 [Kaida-Titan] Broad-Spectrum Scan: {search_term}")
-
         intel_vault = []
+        
         try:
             with DDGS() as ddgs:
-                # Execute search
-                raw_data = list(ddgs.text(full_query, max_results=num_shards))
+                # 1. Quick Search to find potential Shards
+                search_results = list(ddgs.text(query, max_results=max_shards))
                 
-                # 2. Fallback: If whitelist failed, try a totally clean broad search
-                if not raw_data and is_filtered:
-                    print(f"⚠️ [Alert] Trusted sites silent. Attempting wide-band search...")
-                    raw_data = list(ddgs.text(search_term, max_results=num_shards))
-
-                if not raw_data:
+                if not search_results:
                     return []
 
-                for i, shard in enumerate(raw_data):
-                    source_url = shard.get('href')
-                    content_body = shard.get('body')
-                    
-                    if deep_scan:
-                        content_body = self.fetch_full_content(source_url)
+                # 2. Parallel Deep Scanning (Scraping the actual sites)
+                urls = [res['href'] for res in search_results]
+                
+                with concurrent.futures.ThreadPoolExecutor(max_workers=max_shards) as executor:
+                    # Map the deep fetcher to all discovered URLs
+                    deep_contents = list(executor.map(self._fetch_deep_content, urls))
 
-                    intel_package = {
-                        "subject": topic,
-                        "title": shard.get('title'),
-                        "summary": content_body,
-                        "source": source_url,
-                        "category": category if category else "general",
-                        "status": "VERIFIED" if is_filtered else "GENERAL",
-                        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+                # 3. Package the Shards
+                for i, result in enumerate(search_results):
+                    shard = {
+                        "shard_id": f"WEB_SHARD_{i+1}",
+                        "title": result.get('title'),
+                        "source": result.get('href'),
+                        "snippet": result.get('body'),
+                        "deep_content": deep_contents[i] if deep_contents[i] else result.get('body'),
+                        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                        "weight": self._calculate_weight(query, result.get('title') + deep_contents[i])
                     }
-                    print(f"✅ Shard {i+1} Acquired: {intel_package['title'][:40]}...")
-                    intel_vault.append(intel_package)
-                    
+                    print(f"✅ [Acquired] {shard['shard_id']} | Weight: {shard['weight']}%")
+                    intel_vault.append(shard)
+
                 return intel_vault
+
         except Exception as e:
-            print(f"❌ [Failure] {e}")
+            print(f"❌ [Uplink Failure] {e}")
             return []
+
+    def _calculate_weight(self, query, content):
+        """Calculates the mathematical relevance of the shard."""
+        query_words = query.lower().split()
+        if not content: return 0
+        matches = sum(1 for word in query_words if word in content.lower())
+        score = (matches / len(query_words)) * 100
+        return round(score, 2)
+
+if __name__ == "__main__":
+    # Test Unit
+    engine = KaidaTitanEngine()
+    data = engine.ingest("Latest AI breakthrough April 2026")
+    for d in data:
+        print(f"\n--- {d['title']} ---\n{d['deep_content'][:200]}...")

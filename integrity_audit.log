@@ -1,0 +1,5 @@
+[2026-04-25 17:54:03] [KTRP] [REJECT] Topic: whats your next upgrade | Score: 0.0000 | Reason: Critical conflict. External data violates internal truth.
+[2026-04-25 17:54:03] [KTRP] [INTEGRATE] Topic: whats your next upgrade | Score: 1.0000 | Reason: High alignment with internal logic core.
+[2026-04-25 18:49:07] [KTRP] [INTEGRATE] Topic: tell a joke | Score: 1.0000 | Reason: High alignment with internal logic core.
+[2026-04-25 18:53:53] [KTRP] [INTEGRATE] Topic: what movies are playing | Score: 1.0000 | Reason: High alignment with internal logic core.
+[2026-04-25 18:58:29] [KTRP] [INTEGRATE] Topic: write your next upgrade | Score: 1.0000 | Reason: High alignment with internal logic core.
