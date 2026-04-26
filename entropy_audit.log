@@ -1,0 +1,5 @@
+{"timestamp": 1777211819.8440819, "cpu_avg": 0.0, "cpu_variance": 0.0, "memory_percent": 88.4, "calculated_entropy": 4.42, "status": "APEX"}
+{"timestamp": 1777211820.8510113, "cpu_avg": 0.0, "cpu_variance": 0.0, "memory_percent": 87.8, "calculated_entropy": 4.39, "status": "APEX"}
+{"timestamp": 1777211821.8752522, "cpu_avg": 0.0, "cpu_variance": 0.0, "memory_percent": 89.0, "calculated_entropy": 4.45, "status": "APEX"}
+{"timestamp": 1777211822.8909328, "cpu_avg": 0.0, "cpu_variance": 0.0, "memory_percent": 89.0, "calculated_entropy": 4.45, "status": "APEX"}
+{"timestamp": 1777211823.9092877, "cpu_avg": 0.0, "cpu_variance": 0.0, "memory_percent": 86.4, "calculated_entropy": 4.32, "status": "APEX"}

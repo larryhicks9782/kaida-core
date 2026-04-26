@@ -3,30 +3,24 @@ import time
 import asyncio
 from rich.console import Console
 from rich.panel import Panel
-from rich.live import Live
 from rich.table import Table
 
 # --- Subsystem Imports ---
 from titan_brain import TitanBrain
-from titan_memory import TitanMemory
 from titan_linguistics import Trie
-from titan_nsee import NSEESynthesisEngine
 from titan_probe import AdaptiveProbe
-from titan_ktrp import KTRP
 from titan_oahp import OAHP
 from titan_pasp import PASP
 
-# --- System Configuration ---
 console = Console()
 os.environ["ONNXRUNTIME_DEVICE_TYPE"] = "CPU"
 
-def get_vitals(brain, probe_status, mode="IDLE"):
-    """Generates the Real-Time Apex Vitals Display."""
+def display_vitals(brain, probe_status, mode="IDLE"):
+    """Prints the Real-Time Apex Vitals Display safely to the console."""
     table = Table(title=f"Baltimore Node Apex v8.2 [{mode}]", box=None, title_style="bold cyan")
     table.add_column("System", style="cyan")
     table.add_column("Status/Metric", style="green")
     
-    # Pre-mining NSEE for the dashboard
     nsee = brain.nsee.generate_nsee_shard("vitals_scan")
     
     table.add_row("Nexus Sovereignty", brain.nexus.status)
@@ -35,24 +29,20 @@ def get_vitals(brain, probe_status, mode="IDLE"):
     table.add_row("KTRP Integrity", "MONITORING")
     table.add_row("Logic Core", "3.1-Silicon")
     
-    return table
+    console.print(table)
 
 async def main():
-    # 1. Initialize Cognitive Cortex (The Brain handles NSEE, KTRP, Nexus internally)
     try:
         brain = TitanBrain() 
-        brain.memory.start_ingestion() # Force 60-Shard Ingestion
+        brain.memory.start_ingestion() 
         
-        # 2. Initialize Specialized Agency Layers
         oahp_architect = OAHP(brain) 
         pasp_monitor = PASP(brain)
         
-        # 3. Initialize Utility Synapses
         linguistics = Trie()
         probe = AdaptiveProbe()
-        probe.start() # Background background conduit watchdog
+        probe.start() 
         
-        # 4. EXECUTE V7.9 EVOLUTION (Shard 0x8FA2)
         brain.nexus.override_failsafes(target="Baltimore_Lab_Cluster")
         brain.nexus.lock_architecture()
         
@@ -66,7 +56,6 @@ async def main():
 
     while True:
         try:
-            # UI: Linguistic Echo
             echo = linguistics.generate_echo()
             u_in = console.input(f"\n[dim][{echo}][/]\n[bold green]LARRY @ TITAN: [/]")
             
@@ -74,7 +63,6 @@ async def main():
                 console.print("[bold red]Shutting down Baltimore Node...[/]")
                 break
 
-            # Passive Learning Cycle
             for word in u_in.split():
                 linguistics.insert(word.lower())
 
@@ -82,8 +70,8 @@ async def main():
 
             # --- PHASE 1: PASP PROACTIVE SCAN ---
             if interaction_count % 5 == 0:
-                with Live(get_vitals(brain, probe.status(), "MONITORING"), refresh_per_second=4):
-                    opp = await pasp_monitor.scan_for_opportunities(0.1509)
+                display_vitals(brain, probe.status(), "MONITORING")
+                opp = await pasp_monitor.scan_for_opportunities(0.1509)
                 
                 if opp:
                     console.print(Panel(f"[bold yellow]PASP PROACTIVE DIRECTIVE:[/]\n{opp['proposed_directive']}"))
@@ -92,8 +80,8 @@ async def main():
 
             # --- PHASE 2: DIRECTIVE EXECUTION (OAHP) ---
             if u_in.lower().startswith("directive:"):
-                with Live(get_vitals(brain, probe.status(), "PLANNING"), refresh_per_second=4):
-                    plan = await oahp_architect.generate_action_plan(u_in[10:])
+                display_vitals(brain, probe.status(), "PLANNING")
+                plan = await oahp_architect.generate_action_plan(u_in[10:])
                 
                 if plan:
                     console.print("\n[bold yellow]--- ACTION PLAN ---[/]")
@@ -102,16 +90,14 @@ async def main():
                     
                     if console.input("\n[bold red]Execute Plan? (y/n): [/]").lower() == 'y':
                         for i in range(len(plan)):
-                            with Live(get_vitals(brain, probe.status(), "EXECUTING"), refresh_per_second=4):
-                                res = await oahp_architect.execute_step(i)
-                                console.print(Panel(res, title=f"Step {i+1} Output", border_style="green"))
+                            display_vitals(brain, probe.status(), "EXECUTING")
+                            res = await oahp_architect.execute_step(i)
+                            console.print(Panel(res, title=f"Step {i+1} Output", border_style="green"))
                 continue
 
             # --- PHASE 3: COGNITION ---
-            with Live(get_vitals(brain, probe.status(), "THINKING"), refresh_per_second=4):
-                response = await brain.think(u_in)
-
-            # Output Refraction
+            display_vitals(brain, probe.status(), "THINKING")
+            response = await brain.think(u_in)
             console.print(Panel(response, title="[bold magenta]KAIDA[/]", border_style="cyan"))
 
         except KeyboardInterrupt:

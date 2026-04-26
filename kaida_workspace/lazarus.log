@@ -1,0 +1,4 @@
+[LAZARUS] Daemon initiated. PID: 23131
+[LAZARUS] Target 'kaida_telemetry_daemon.py' is DOWN. Initiating resurrection...
+[LAZARUS] Target 'kaida_telemetry_daemon.py' successfully resurrected.
+[TELEMETRY] Daemon active. PID: 23142
