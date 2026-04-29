@@ -3,7 +3,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA35HCW4WfW3WmO7AI4auXO5btxdVevpJE",
+  apiKey: "KEY_REDACTED",
   authDomain: "titan-lab-9782.firebaseapp.com",
   projectId: "titan-lab-9782",
   storageBucket: "titan-lab-9782.firebasestorage.app",

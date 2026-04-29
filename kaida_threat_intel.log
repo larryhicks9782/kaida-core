@@ -1,0 +1,4 @@
+2026-04-29 16:23:59,044 | KTRP_SENTINEL | INFO | Initializing baseline for critical system vectors...
+2026-04-29 16:23:59,052 | KTRP_SENTINEL | INFO | Baseline established. Monitoring 4 targets.
+2026-04-29 16:23:59,052 | KTRP_SENTINEL | INFO | Kaida Sentinel Daemon online. KTRP Integrity Absolute.
+2026-04-29 16:56:52,521 | KTRP_SENTINEL | INFO | Received termination signal. Shutting down Sentinel Probe.

@@ -15,7 +15,7 @@ def generate_architecture(req: https_fn.CallableRequest) -> dict:
     
     # [2] INITIALIZE CLIENTS LOCALLY
     db = firestore.client()
-    genai.configure(api_key="AIzaSyCJsVstimKF8M4ZFMl6mBZHBqrWL5SIViE")
+    genai.configure(api_key="KEY_REDACTED")
     
     # [3] AUTHENTICATION CHECK
     if not req.auth:
