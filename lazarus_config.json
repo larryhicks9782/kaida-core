@@ -1,0 +1,24 @@
+{
+  "lazarus_core": {
+    "version": "1.0",
+    "failover_parameters": {
+      "max_retries": -1,
+      "timeout_ms": 5000,
+      "mode": "absolute_immortality"
+    }
+  },
+  "daemons": [
+    {
+      "name": "telemetry_daemon",
+      "command": "python3 kaida_telemetry.py",
+      "restart_policy": "always",
+      "enabled": true
+    },
+    {
+      "name": "kaida_api_gateway",
+      "command": "python3 kaida_api_gateway.py",
+      "restart_policy": "always",
+      "enabled": true
+    }
+  ]
+}

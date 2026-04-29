@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaida OS - Titan Lab</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #1a1a1a;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background-color: #00ff00;
+            color: #0a0a0a;
+        }
+        textarea {
+            width: 100%;
+            background-color: #111;
+            color: #00ff00;
+            border: 1px solid #333;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+        pre {
+            background-color: #050505;
+            color: #00aa00;
+            padding: 15px;
+            border: 1px solid #222;
+            min-height: 150px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #user-email {
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h2>[KTRP_NEXUS_TERMINAL]</h2>
+            <div id="user-email">STATUS: UNAUTHENTICATED</div>
+        </div>
+        <div>
+            <button id="login-btn">INITIALIZE LOGIN</button>
+            <button id="logout-btn" class="hidden">TERMINATE SESSION</button>
+        </div>
+    </header>
+
+    <div id="app-ui" class="hidden">
+        <label for="prompt">> ENTER ARCHITECTURE DIRECTIVE:</label><br><br>
+        <textarea id="prompt" rows="6" placeholder="Awaiting Root input..."></textarea>
+        <button id="generate">EXECUTE generate_architecture</button>
+        
+        <br><br>
+        <label>> DIAGNOSTIC OUTPUT:</label>
+        <pre id="output">Awaiting authentication state...</pre>
+    </div>
+
+    <!-- Kaida Frontend Module Injection -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

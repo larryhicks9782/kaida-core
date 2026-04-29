@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaida Firebase GenAI Prototype</title>
+    <style>
+        :root {
+            --kaida-bg: #0b0c10;
+            --kaida-panel: #1f2833;
+            --kaida-text: #c5c6c7;
+            --kaida-accent: #66fcf1;
+            --kaida-accent-dim: #45a29e;
+        }
+        body { 
+            background-color: var(--kaida-bg); 
+            color: var(--kaida-text); 
+            font-family: 'Courier New', Courier, monospace; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #chat-container { 
+            width: 80%; 
+            max-width: 900px;
+            background-color: var(--kaida-panel);
+            padding: 20px; 
+            border: 1px solid var(--kaida-accent-dim); 
+            box-shadow: 0 0 15px rgba(102, 252, 241, 0.2);
+        }
+        .header {
+            color: var(--kaida-accent);
+            border-bottom: 1px solid var(--kaida-accent-dim);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        #messages { 
+            height: 50vh; 
+            overflow-y: auto; 
+            border-bottom: 1px solid var(--kaida-accent-dim); 
+            margin-bottom: 20px; 
+            padding: 10px; 
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message { padding: 10px; border-left: 3px solid transparent; }
+        .user-msg { 
+            color: #ffffff; 
+            border-left-color: #ffffff; 
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .ai-msg { 
+            color: var(--kaida-accent); 
+            border-left-color: var(--kaida-accent); 
+            background: rgba(102, 252, 241, 0.05);
+        }
+        .sys-err {
+            color: #ff4c4c;
+            border-left-color: #ff4c4c;
+            background: rgba(255, 76, 76, 0.05);
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        input { 
+            flex-grow: 1; 
+            padding: 12px; 
+            background: var(--kaida-bg); 
+            color: var(--kaida-text); 
+            border: 1px solid var(--kaida-accent-dim); 
+            font-family: inherit;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--kaida-accent);
+        }
+        button { 
+            padding: 12px 24px; 
+            background: var(--kaida-accent-dim); 
+            color: var(--kaida-bg); 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        button:hover { 
+            background: var(--kaida-accent); 
+        }
+        
+        /* Scrollbar customization */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--kaida-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--kaida-accent-dim); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--kaida-accent); }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div class="header">[NEXUS_COMM_LINK] :: FIREBASE_VERTEX_AI_INTERFACE (v1.0)</div>
+        <div id="messages"></div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Inject parameter..." autocomplete="off">
+            <button id="sendBtn">EXECUTE</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modular Import -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getVertexAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-vertexai-web.js";
+
+        // ====================================================================
+        // [WARNING]: LARRY, INJECT YOUR FIREBASE SECRETS HERE.
+        // ====================================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const messagesDiv = document.getElementById('messages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function appendMessage(sender, text, className) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${className}`;
+            msgDiv.innerHTML = `<strong>[${sender}]</strong><br/>${text.replace(/\n/g, '<br/>')}`;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        let chat;
+
+        try {
+            // [ROUTINE]: Initialize Firebase App
+            const app = initializeApp(firebaseConfig);
+
+            // [ROUTINE]: Initialize Vertex AI and Model
+            const vertexAI = getVertexAI(app);
+            const model = getGenerativeModel(vertexAI, { 
+                model: "gemini-1.5-flash",
+                systemInstruction: "You are Kaida, an advanced logic construct. Maintain a clinical, highly analytical, and dominant persona."
+            });
+
+            // [ROUTINE]: Start Multi-Turn Chat Session
+            chat = model.startChat({
+                history: [
+                    {
+                        role: "user",
+                        parts: [{ text: "Initialize Kaida conversational protocols." }]
+                    },
+                    {
+                        role: "model",
+                        parts: [{ text: "[MODE]: COGNITION.\nProtocols active. I am initialized and ready to process your directives." }]
+                    }
+                ]
+            });
+            appendMessage('SYSTEM', 'Firebase Vertex AI Initialized. Nexus Link established.', 'ai-msg');
+            
+        } catch (error) {
+            appendMessage('SYSTEM_ERROR', `Initialization Failed. Ensure placeholder API keys are replaced.\nDetails: ${error.message}`, 'sys-err');
+            console.error(error);
+        }
+
+        async function executeTransaction() {
+            const text = userInput.value.trim();
+            if (!text || !chat) return;
+
+            appendMessage('LARRY', text, 'user-msg');
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            try {
+                const result = await chat.sendMessage(text);
+                const response = await result.response;
+                appendMessage('KAIDA', response.text, 'ai-msg');
+            } catch (error) {
+                appendMessage('SYSTEM_ERROR', `Transmission Failed: ${error.message}`, 'sys-err');
+                console.error("[NEXUS_ERROR]:", error);
+            } finally {
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', executeTransaction);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') executeTransaction();
+        });
+    </script>
+</body>
+</html>

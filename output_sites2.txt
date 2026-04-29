@@ -1,0 +1,21 @@
+[2026-04-29T10:10:18.356Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[2026-04-29T10:10:18.362Z] > authorizing via signed-in user (larryhicks9782@gmail.com)
+[2026-04-29T10:10:18.363Z] [iam] checking project titan-lab-9782 for permissions ["firebase.projects.get","firebasehosting.sites.get"]
+[2026-04-29T10:10:18.370Z] Checked if tokens are valid: true, expires at: 1777459967143
+[2026-04-29T10:10:18.371Z] Checked if tokens are valid: true, expires at: 1777459967143
+[2026-04-29T10:10:18.375Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions [none]
+[2026-04-29T10:10:18.376Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions  x-goog-user-project=titan-lab-9782
+[2026-04-29T10:10:18.378Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.get"]}
+[2026-04-29T10:10:23.920Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions 200
+[2026-04-29T10:10:23.922Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.get"]}
+[2026-04-29T10:10:23.925Z] Checked if tokens are valid: true, expires at: 1777459967143
+[2026-04-29T10:10:23.926Z] Checked if tokens are valid: true, expires at: 1777459967143
+[2026-04-29T10:10:23.928Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/titan-lab-9782/sites pageToken=&pageSize=10
+[2026-04-29T10:10:25.342Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/titan-lab-9782/sites 409
+[2026-04-29T10:10:25.343Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/titan-lab-9782/sites {"error":{"code":409,"message":"Channel `projects/626877214205/sites/titan-lab-9782/channels/live` already exists.","status":"ALREADY_EXISTS"}}
+[2026-04-29T10:10:30.374Z] Error: Timed out.
+    at Timeout._onTimeout (/data/data/com.termux/files/usr/lib/node_modules/firebase-tools/lib/utils.js:309:49)
+    at listOnTimeout (node:internal/timers:581:17)
+    at process.processTimers (node:internal/timers:519:7)
+
+Error: An unexpected error has occurred.

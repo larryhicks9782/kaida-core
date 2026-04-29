@@ -1,0 +1,142 @@
+[2026-04-27T21:22:27.202Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[2026-04-27T21:22:27.210Z] > authorizing via signed-in user (larryhicks9782@gmail.com)
+[2026-04-27T21:22:27.211Z] [iam] checking project titan-lab-9782 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[2026-04-27T21:22:27.224Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:27.227Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:27.234Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions [none]
+[2026-04-27T21:22:27.235Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions  x-goog-user-project=titan-lab-9782
+[2026-04-27T21:22:27.237Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[2026-04-27T21:22:28.003Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions 200
+[2026-04-27T21:22:28.005Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[2026-04-27T21:22:28.007Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:28.009Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:28.010Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/titan-lab-9782/serviceAccounts/titan-lab-9782@appspot.gserviceaccount.com:testIamPermissions [none]
+[2026-04-27T21:22:28.010Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/titan-lab-9782/serviceAccounts/titan-lab-9782@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[2026-04-27T21:22:33.350Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/titan-lab-9782/serviceAccounts/titan-lab-9782@appspot.gserviceaccount.com:testIamPermissions 200
+[2026-04-27T21:22:33.353Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/titan-lab-9782/serviceAccounts/titan-lab-9782@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+
+=== Deploying to 'titan-lab-9782'...
+
+i  deploying functions 
+[2026-04-27T21:22:33.382Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:33.383Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:33.385Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782 [none]
+[2026-04-27T21:22:33.729Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782 200
+[2026-04-27T21:22:33.730Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782 {"projectNumber":"626877214205","projectId":"titan-lab-9782","lifecycleState":"ACTIVE","name":"Titan lab 9782","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-04-16T22:38:52.823Z","parent":{"type":"organization","id":"98545981075"}}
+i  functions: preparing codebase default for deployment 
+i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[2026-04-27T21:22:33.746Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:33.747Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:33.748Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/titan-lab-9782/adminSdkConfig [none]
+[2026-04-27T21:22:34.309Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/titan-lab-9782/adminSdkConfig 200
+[2026-04-27T21:22:34.311Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/titan-lab-9782/adminSdkConfig {"projectId":"titan-lab-9782","databaseURL":"https://titan-lab-9782-default-rtdb.firebaseio.com","storageBucket":"titan-lab-9782.firebasestorage.app"}
+[2026-04-27T21:22:34.313Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:34.314Z] Checked if tokens are valid: true, expires at: 1777325875208
+[2026-04-27T21:22:34.314Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/titan-lab-9782/configs [none]
+[2026-04-27T21:22:34.809Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/titan-lab-9782/configs 200
+[2026-04-27T21:22:34.811Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/titan-lab-9782/configs {}
+[2026-04-27T21:22:34.891Z] Customer code is not Node
+[2026-04-27T21:22:34.908Z] Validating python source
+[2026-04-27T21:22:34.911Z] Building python source
+i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[2026-04-27T21:22:34.923Z] Could not find functions.yaml. Must use http discovery
+[2026-04-27T21:22:34.978Z] Running command with virtualenv: command=., args=["\"/root/titan_system/kaida_workspace/functions/venv/bin/activate\"","&&","python3.13","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[2026-04-27T21:22:35.511Z] stdout: /root/titan_system/kaida_workspace/functions/venv/lib/python3.13/site-packages/firebase_functions
+
+[2026-04-27T21:22:35.541Z] Running admin server with args: ["python3.13","\"/root/titan_system/kaida_workspace/functions/venv/lib/python3.13/site-packages/firebase_functions/private/serving.py\""] and env: {"FIREBASE_CONFIG":"{\"projectId\":\"titan-lab-9782\",\"databaseURL\":\"https://titan-lab-9782-default-rtdb.firebaseio.com\",\"storageBucket\":\"titan-lab-9782.firebasestorage.app\"}","GCLOUD_PROJECT":"titan-lab-9782","GOOGLE_CLOUD_QUOTA_PROJECT":"titan-lab-9782","ADMIN_PORT":"8081"} in /root/titan_system/kaida_workspace/functions
+[2026-04-27T21:22:35.548Z] Running command with virtualenv: command=., args=["\"/root/titan_system/kaida_workspace/functions/venv/bin/activate\"","&&","python3.13","\"/root/titan_system/kaida_workspace/functions/venv/lib/python3.13/site-packages/firebase_functions/private/serving.py\""]
+ * Serving Flask app 'serving'
+ * Debug mode: off
+
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+Press CTRL+C to quit
+
+127.0.0.1 - - [27/Apr/2026 21:22:43] "GET /__/functions.yaml HTTP/1.1" 200 -
+
+[2026-04-27T21:22:43.251Z] Got response from /__/functions.yaml endpoints:
+  generate_architecture:
+    availableMemoryMb: null
+    callableTrigger: {}
+    concurrency: null
+    entryPoint: generate_architecture
+    ingressSettings: null
+    labels:
+      deployment-callable: 'true'
+    maxInstances: null
+    minInstances: null
+    platform: gcfv2
+    secretEnvironmentVariables: []
+    serviceAccountEmail: null
+    timeoutSeconds: null
+params: []
+requiredAPIs: []
+specVersion: v1alpha1
+
+127.0.0.1 - - [27/Apr/2026 21:22:43] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+Terminated
+
+i  functions: preparing functions directory for uploading... 
+i  functions: packaged /root/titan_system/kaida_workspace/functions (118.43 MB) for uploading 
+[2026-04-27T21:27:11.288Z] Checked if tokens are valid: false, expires at: 1777325875208
+[2026-04-27T21:27:11.290Z] Checked if tokens are valid: false, expires at: 1777325875208
+[2026-04-27T21:27:11.292Z] > refreshing access token with scopes: []
+[2026-04-27T21:27:11.317Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[2026-04-27T21:27:11.318Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[2026-04-27T21:27:11.731Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[2026-04-27T21:27:11.732Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[2026-04-27T21:27:11.794Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/titan-lab-9782/locations/-/functions [none]
+[2026-04-27T21:27:17.477Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/titan-lab-9782/locations/-/functions 200
+[2026-04-27T21:27:17.481Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/titan-lab-9782/locations/-/functions {}
+[2026-04-27T21:27:17.487Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:17.488Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:17.501Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/titan-lab-9782/locations/-/functions filter=environment%3D%22GEN_2%22
+[2026-04-27T21:27:17.955Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/titan-lab-9782/locations/-/functions 200
+[2026-04-27T21:27:17.956Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/titan-lab-9782/locations/-/functions {"functions":[{"name":"projects/titan-lab-9782/locations/us-central1/functions/generate_architecture","buildConfig":{"build":"projects/626877214205/locations/us-central1/builds/a6525f4d-e5c5-4330-a530-ac4396c74c3f","runtime":"python313","entryPoint":"generate_architecture","source":{"storageSource":{"bucket":"gcf-v2-sources-626877214205-us-central1","object":"generate_architecture/function-source.zip","generation":"1777320487798045"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/titan-lab-9782/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-626877214205-us-central1","object":"generate_architecture/function-source.zip","generation":"1777320487798045"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/titan-lab-9782/serviceAccounts/626877214205-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"state":"UNKNOWN","updateTime":"2026-04-27T21:02:16.686296514Z","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"ee7ab3115ceaeb97ed3ea90a43cd17274ad23cc4","deployment-callable":"true"},"stateMessages":[{"severity":"ERROR","type":"CloudRunServiceNotFound","message":"Cloud Run service projects/titan-lab-9782/locations/us-central1/services/generate-architecture for the function was not found. The function will not work correctly. Please redeploy."}],"environment":"GEN_2","url":"https://us-central1-titan-lab-9782.cloudfunctions.net/generate_architecture","createTime":"2026-04-27T20:08:08.090642502Z","satisfiesPzi":true}]}
+i  functions: ensuring required API run.googleapis.com is enabled... 
+i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+i  functions: ensuring required API storage.googleapis.com is enabled... 
+i  functions: generating the service identity for pubsub.googleapis.com... 
+[2026-04-27T21:27:18.001Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:18.001Z] Checked if tokens are valid: true, expires at: 1777328830733
+i  functions: generating the service identity for eventarc.googleapis.com... 
+[2026-04-27T21:27:18.002Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:18.003Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:18.004Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[2026-04-27T21:27:18.004Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/pubsub.googleapis.com:generateServiceIdentity  x-goog-user-project=626877214205
+[2026-04-27T21:27:18.004Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/pubsub.googleapis.com:generateServiceIdentity {}
+[2026-04-27T21:27:18.011Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[2026-04-27T21:27:18.011Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/eventarc.googleapis.com:generateServiceIdentity  x-goog-user-project=626877214205
+[2026-04-27T21:27:18.012Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/eventarc.googleapis.com:generateServiceIdentity {}
+[2026-04-27T21:27:18.628Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/pubsub.googleapis.com:generateServiceIdentity 200
+[2026-04-27T21:27:18.636Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-626877214205@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"107096207100072212174"}}
+[2026-04-27T21:27:18.683Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/eventarc.googleapis.com:generateServiceIdentity 200
+[2026-04-27T21:27:18.685Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/626877214205/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-626877214205@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"113107200357148352127"}}
+[2026-04-27T21:27:18.727Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:18.735Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:18.737Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782 [none]
+[2026-04-27T21:27:24.151Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782 200
+[2026-04-27T21:27:24.160Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/titan-lab-9782 {"projectNumber":"626877214205","projectId":"titan-lab-9782","lifecycleState":"ACTIVE","name":"Titan lab 9782","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-04-16T22:38:52.823Z","parent":{"type":"organization","id":"98545981075"}}
+[2026-04-27T21:27:24.172Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:24.173Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:24.178Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/626877214205 [none]
+[2026-04-27T21:27:24.590Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/626877214205 403
+[2026-04-27T21:27:24.595Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/626877214205 {"error":{"code":403,"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"626877214205","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205","service":"compute.googleapis.com","consumer":"projects/626877214205","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205"}]}]}}
+[2026-04-27T21:27:24.629Z] unable to look up default compute service account. Falling back to 626877214205-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"626877214205","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205","service":"compute.googleapis.com","consumer":"projects/626877214205","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/626877214205 had HTTP Error: 403, Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[2026-04-27T21:27:24.632Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:24.633Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:24.635Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/626877214205 [none]
+[2026-04-27T21:27:24.755Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/626877214205 403
+[2026-04-27T21:27:24.757Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/626877214205 {"error":{"code":403,"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"serviceTitle":"Compute Engine API","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205","consumer":"projects/626877214205","service":"compute.googleapis.com","containerInfo":"626877214205"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205"}]}]}}
+[2026-04-27T21:27:24.762Z] unable to look up default compute service account. Falling back to 626877214205-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"serviceTitle":"Compute Engine API","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205","consumer":"projects/626877214205","service":"compute.googleapis.com","containerInfo":"626877214205"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/626877214205 had HTTP Error: 403, Compute Engine API has not been used in project 626877214205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=626877214205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[2026-04-27T21:27:24.815Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:24.818Z] Checked if tokens are valid: true, expires at: 1777328830733
+[2026-04-27T21:27:24.822Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/titan-lab-9782/locations/us-central1/functions:generateUploadUrl [none]
+[2026-04-27T21:27:25.816Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/titan-lab-9782/locations/us-central1/functions:generateUploadUrl 200
+[2026-04-27T21:27:25.822Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/titan-lab-9782/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/gcf-v2-uploads-626877214205.us-central1.cloudfunctions.appspot.com/9363ed0b-fd0a-4592-8acb-e118e91bf652.zip?GoogleAccessId=service-626877214205@gcf-admin-robot.iam.gserviceaccount.com&Expires=1777327044&Signature=qI3fC569rhEy%2FkKPbuccHpznmrgKRjWTAvMmr88SVtc9E7ULzD5wM9B6ZbfZNcZrNNtoF%2FBgECZODywKFgki6rOxiNpdWTTxYP3R2sBKZrMZenGpN4omPYkv3rAJ%2Bkzg9xE9zOn89hLEs7K4F%2Bl7yvKDTW%2F3ZJ6FfmNIHpyjGmiDzccwG5Ed09DJEyoo9Gz6zqxgMyvhlZ8ZBE1yLtRlPWxPmJNLs3FZ04dEN94%2FkFkfduETvovPgt6pX9vbJpoPaBRpxp1aBe7iQBaPqs0JpK7fW3KvEDMrmEXl03Z4efcm1%2BJHJDWsNbwbee3%2FqLB7wYmVKaxcBRxvyLdA3Gfmcw%3D%3D","storageSource":{"bucket":"gcf-v2-uploads-626877214205.us-central1.cloudfunctions.appspot.com","object":"9363ed0b-fd0a-4592-8acb-e118e91bf652.zip"}}
+[2026-04-27T21:27:25.845Z] >>> [apiv2][query] PUT https://storage.googleapis.com/gcf-v2-uploads-626877214205.us-central1.cloudfunctions.appspot.com/9363ed0b-fd0a-4592-8acb-e118e91bf652.zip GoogleAccessId=service-626877214205%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1777327044&Signature=qI3fC569rhEy%2FkKPbuccHpznmrgKRjWTAvMmr88SVtc9E7ULzD5wM9B6ZbfZNcZrNNtoF%2FBgECZODywKFgki6rOxiNpdWTTxYP3R2sBKZrMZenGpN4omPYkv3rAJ%2Bkzg9xE9zOn89hLEs7K4F%2Bl7yvKDTW%2F3ZJ6FfmNIHpyjGmiDzccwG5Ed09DJEyoo9Gz6zqxgMyvhlZ8ZBE1yLtRlPWxPmJNLs3FZ04dEN94%2FkFkfduETvovPgt6pX9vbJpoPaBRpxp1aBe7iQBaPqs0JpK7fW3KvEDMrmEXl03Z4efcm1%2BJHJDWsNbwbee3%2FqLB7wYmVKaxcBRxvyLdA3Gfmcw%3D%3D
+[2026-04-27T21:27:25.847Z] >>> [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-626877214205.us-central1.cloudfunctions.appspot.com/9363ed0b-fd0a-4592-8acb-e118e91bf652.zip [stream]
